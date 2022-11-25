@@ -7,7 +7,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: black,
+      backgroundColor: white,
       body: SafeArea(
         child: Center(
           child: Text("lmao"),

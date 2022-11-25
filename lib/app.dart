@@ -1,6 +1,7 @@
 import 'package:ehh/constants/theme.dart';
 import 'package:ehh/controllers/permissions_controller.dart';
 import 'package:ehh/routing/router.dart';
+import 'package:ehh/screens/auth_screen/auth_screen.dart';
 import 'package:ehh/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,7 @@ class App extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => PermissionsController(),
           ),
-        ], child: const HomeScreen());
+        ], child: const AuthScreen());
       },
     );
   }
