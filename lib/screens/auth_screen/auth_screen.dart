@@ -1,6 +1,8 @@
 import 'package:ehh/constants/spacing.dart';
+import 'package:ehh/constants/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({
@@ -13,7 +15,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _phone = "";
+  PhoneNumber _phone = PhoneNumber();
 
   @override
   Widget build(BuildContext context) {
@@ -24,35 +26,31 @@ class _AuthScreenState extends State<AuthScreen> {
             child: Form(
               key: _formKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 30,
                       vertical: Spacing.screenPadding,
                     ),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: "Phone number",
-                        enabledBorder: UnderlineInputBorder(),
-                        focusedBorder: UnderlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        final czechFormat = RegExp(r"(2[0-9]{2}|3[0-9]{2}|4[0-9]{2}|5[0-9]{2}|72[0-9]|73[0-9]|77[0-9]|60[1-8]|56[0-9]|70[2-5]|79[0-9])[0-9]{3}[0-9]{3}$");
-                        if (value == null) return "Enter a phone number";
-                        if (!czechFormat.hasMatch(value)) return "Invalid phone number";
-                      },
-                      onChanged: (value) => _phone = value,
-                      keyboardType: TextInputType.phone,
+                    child: InternationalPhoneNumberInput(
+                      onInputChanged: (value) => _phone = value,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        debugPrint(_phone);
-                        context.go("/otp");
-                      }
-                    },
-                    child: Text("Send OTP"),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: primary,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        losefocus(context);
+                        if (_formKey.currentState!.validate()) {
+                          // debugPrint(_phone);
+                        }
+                      },
+                      child: const Text("Send OTP", style: TextStyle(color: white, fontSize: 20)),
+                    ),
                   )
                 ],
               ),
