@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "919292181373",
+    "project_id": "ehh-sleepers-shn",
+    "storage_bucket": "ehh-sleepers-shn.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919292181373:android:c4e1f77120a3c34061ea14",
+        "android_client_info": {
+          "package_name": "com.example.ehh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "919292181373-vj4dqcmqbj5jmrv2annhhfu754u4sajm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5rjAxuYvgZBXsWtgDiRChCq8mqtKckzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "919292181373-vj4dqcmqbj5jmrv2annhhfu754u4sajm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919292181373:android:d45b4dbeed12c5a361ea14",
+        "android_client_info": {
+          "package_name": "cz.ehh_sleepers_shn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "919292181373-1h164iqt2ntj7bsq9ol1or74rvnvpoj6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cz.ehh_sleepers_shn",
+            "certificate_hash": "478ea47a36ccf0ded2e04dd04a280a56c729825b"
+          }
+        },
+        {
+          "client_id": "919292181373-vj4dqcmqbj5jmrv2annhhfu754u4sajm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5rjAxuYvgZBXsWtgDiRChCq8mqtKckzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "919292181373-vj4dqcmqbj5jmrv2annhhfu754u4sajm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
