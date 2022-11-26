@@ -1,5 +1,5 @@
-import 'package:ehh/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class EmergencyScreen extends StatefulWidget {
   EmergencyScreen({Key? key}) : super(key: key);
@@ -30,7 +30,9 @@ class EmergencyScreenState extends State<EmergencyScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go("/map");
+                      },
                       child: const Text("Accept", style: TextStyle(fontSize: 30, color: Colors.green)),
                     ),
                     TextButton(
