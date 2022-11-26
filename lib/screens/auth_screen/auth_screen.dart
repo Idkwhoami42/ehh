@@ -101,7 +101,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
                         if (_formKey.currentState!.validate()) {
                           if (otpRequested) {
-                            context.go("/home");
+                            context.go("/emergency");
                           }
                           // debugPrint(_phone);
                           setState(() {
