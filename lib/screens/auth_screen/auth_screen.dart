@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:ehh/constants/spacing.dart';
 import 'package:ehh/constants/theme.dart';
+import 'package:ehh/routing/routes.dart';
 import 'package:ehh/services/functions/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,38 +36,28 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void login() {
     setState(() => _loading = true);
-    UserService()
-        .verifyPhoneNumber(
+    UserService().verifyPhoneNumber(
       _phoneNumber.toString(),
       _verificationFailed,
       startVerification,
-    )
-        .onError((Object error, stackTrace) {
-      setState(() => _loading = false);
-      handleUnknownError(error);
-      throw (error);
-    });
+    );
   }
 
   void _verificationFailed(FirebaseAuthException e) {
+    log('Phone verification failed', error: e);
     return;
   }
 
-  void startVerification({
-    String? verificationId,
-    int? resendToken,
+  startVerification(
+    String verificationId,
+    int? token,
     // ConfirmationResult? webResult,
-  }) {
+  ) {
     setState(() => _loading = false);
-    Navigator.pushNamed(
-      context,
-      Routes.LoginVerification.buildPath(),
-      arguments: LoginVerificationScreenDependencies(
-        phoneNumber: _phoneNumber,
-        verificationId: verificationId,
-        // webConfirmation: webResult,
-      ),
-    );
+    context.pushNamed(RouteNames.phoneVerification, queryParams: {
+      "phoneNumber": _phoneNumber,
+      "verificationId": verificationId,
+    });
   }
 
   @override

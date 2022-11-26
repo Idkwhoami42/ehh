@@ -39,4 +39,17 @@ class UserService {
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
   }
+
+  Future<void> loginWithSmsCode(
+    String smsCode,
+    String? verificationId,
+  ) async {
+    if (verificationId != null) {
+      PhoneAuthCredential creds = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: smsCode);
+      FirebaseAuth.instance.signInWithCredential(creds);
+    } else {
+      return;
+    }
+  }
 }
