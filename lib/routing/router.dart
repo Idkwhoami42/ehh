@@ -6,30 +6,29 @@ import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
   routes: [
-    ShellRoute(
-      builder: (context, state, child) {
+    GoRoute(
+      path: "/",
+      builder: (context, state) {
         return AuthScreen();
       },
-      routes: [
-        GoRoute(
-          path: '/otp',
-          builder: (context, state) {
-            return OtpScreen();
-          },
-        ),
-        GoRoute(
-          path: '/home',
-          builder: (context, state) {
-            return HomeScreen();
-          },
-        ),
-        GoRoute(
-          path: '/settings',
-          builder: (context, state) {
-            return SettingsScreen();
-          },
-        ),
-      ],
+    ),
+    GoRoute(
+      path: '/otp',
+      builder: (context, state) {
+        return OtpScreen();
+      },
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) {
+        return HomeScreen();
+      },
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) {
+        return SettingsScreen();
+      },
     ),
   ],
 );

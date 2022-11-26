@@ -1,6 +1,7 @@
 import 'package:ehh/constants/spacing.dart';
 import 'package:ehh/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -51,10 +52,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         losefocus(context);
                         if (_formKey.currentState!.validate()) {
                           // debugPrint(_phone);
+                          context.go("/otp");
                         }
                       },
-                      child: const Text("Send OTP",
-                          style: TextStyle(color: white, fontSize: 20)),
+                      child: const Text("Send OTP", style: TextStyle(color: white, fontSize: 20)),
                     ),
                   )
                 ],
