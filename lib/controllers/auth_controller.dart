@@ -28,13 +28,17 @@ class AuthController extends ChangeNotifier {
   }
 
   logIn(String phoneNumber) async {
-    DocumentSnapshot? doc =
-        await FirestoreQueries().getUserByPhone(phoneNumber);
-    if (doc != null) {
-      _currentUser = UserData.fromDoc(doc);
-      _isLoggedIn = true;
+    try {
+      DocumentSnapshot? doc =
+          await FirestoreQueries().getUserByPhone(phoneNumber);
+      if (doc != null) {
+        _currentUser = UserData.fromDoc(doc);
+        _isLoggedIn = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
     }
-    notifyListeners();
   }
 
   /// Signs out the current user.

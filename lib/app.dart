@@ -12,6 +12,12 @@ class App extends StatelessWidget {
       routerConfig: router,
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
+      // builder: (context, child) {
+      //   return MultiProvider(
+      //     providers: [],
+      //     child: child,
+      //   );
+      // },
       theme: ThemeData(
         fontFamily: defaultFont,
         inputDecorationTheme: InputDecorationTheme(
