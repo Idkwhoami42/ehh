@@ -7,19 +7,20 @@ List<CPR> CPR_locations() {
   print("e");
   for (Map<String, dynamic> i in data) {
     // print(i);
-    CPR cpr = CPR(i['id'], i['nazev'], i['address'], i['lat'], i['lng'], i['mobile'] == 'Ano');
+    CPR cpr = CPR(i['id'], i['nazev'], i['address'], i['lat'], i['lng'], i['mobile'] == 'Ano', false);
     all_cprs.add(cpr);
   }
   return all_cprs;
 }
 
 class CPR {
-  CPR(this.id, this.name, this.address, this.lat, this.long, this.mobile);
+  CPR(this.id, this.name, this.address, this.lat, this.long, this.mobile, this.picked);
 
   int id;
   String name, address;
   double lat, long;
   bool mobile;
+  bool picked;
 }
 
 List<Map<String, dynamic>> data = [
