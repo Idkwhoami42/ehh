@@ -36,7 +36,6 @@ dependencies:
   firebase_core: ^2.3.0
   flutter:
     sdk: flutter
-  go_router: ^5.2.0
   google_fonts: ^3.0.1
   intl_phone_number_input: ^0.7.1
   location: ^4.4.0

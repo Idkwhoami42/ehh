@@ -22,6 +22,10 @@ class UserService {
     }
   }
 
+  Future<void> login(String phoneNumber) async {
+    return;
+  }
+
   Future<void> verifyPhoneNumber(
     String phoneNumber,
     Function(FirebaseAuthException) failedCallback,

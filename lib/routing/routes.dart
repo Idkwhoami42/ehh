@@ -1,6 +1,7 @@
 enum Routes {
   authScreen,
   homeScreen,
+  settingsScreen,
 }
 
 class RouteNames {

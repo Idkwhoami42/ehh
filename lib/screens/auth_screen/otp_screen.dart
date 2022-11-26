@@ -1,6 +1,6 @@
 import 'package:ehh/constants/spacing.dart';
+import 'package:ehh/routing/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({Key? key}) : super(key: key);
@@ -47,7 +47,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         debugPrint(_otp);
-                        context.go("/home");
+                        Navigator.pushNamed(context, RouteNames.home);
                       }
                     },
                     child: Text("Login"),

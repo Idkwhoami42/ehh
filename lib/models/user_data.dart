@@ -13,7 +13,7 @@ class UserData {
   final String firstName;
   final String lastName;
   final String phoneNumber;
-  final String hasTraining;
+  final bool hasTraining;
 
   factory UserData.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

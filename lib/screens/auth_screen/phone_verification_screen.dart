@@ -1,7 +1,6 @@
 import 'package:ehh/routing/routes.dart';
 import 'package:ehh/services/functions/user_service.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {
@@ -25,8 +24,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   TextEditingController _pinController = TextEditingController();
   String? verificationError;
 
-  Future<void> _verifyAndLogin() async {
-    context.pushNamed(RouteNames.home);
+  void _verifyAndLogin() {
+    Navigator.pushNamed(context, RouteNames.home);
 
     if (_formKey.currentState!.validate()) {
       _loading = true;
@@ -35,7 +34,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     try {
       UserService()
           .loginWithSmsCode(_pinController.text, widget.verificationId);
-      context.pushNamed(RouteNames.home);
+      Navigator.pushNamed(context, RouteNames.home);
     } catch (e) {
       setState(() {
         verificationError = "Invalid verification code.";
