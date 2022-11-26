@@ -16,9 +16,16 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   PhoneNumber _phone = PhoneNumber(isoCode: 'CZ');
+  String _otp = "";
+  bool otpRequested = false, isCertified = false;
+  String correctOTP = "000000"; // to change
 
   void updatePhone(PhoneNumber newNumber) {
     _phone = newNumber;
+  }
+
+  void updateOPT(String otp) {
+    _otp = otp;
   }
 
   @override
@@ -31,6 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -40,6 +48,46 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: InternationalPhoneNumberInput(
                       initialValue: _phone,
                       onInputChanged: updatePhone,
+                      cursorColor: black,
+                    ),
+                  ),
+                  Visibility(
+                    visible: otpRequested,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 130,
+                        vertical: Spacing.screenPadding,
+                      ),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: "OTP",
+                        ),
+                        validator: (value) {
+                          debugPrint(value);
+                          if (value != correctOTP) return "Invalid OTP";
+                        },
+                        maxLength: 6,
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: otpRequested,
+                    child: Row(
+                      children: [
+                        const Spacer(),
+                        Checkbox(
+                          value: isCertified,
+                          onChanged: (value) => setState(() {
+                            isCertified = value!;
+                          }),
+                        ),
+                        const Text(
+                          "Are you certified to perform a CPR?",
+                          style: TextStyle(color: black, fontSize: 16),
+                        ),
+                        const Spacer(),
+                      ],
                     ),
                   ),
                   Container(
@@ -50,12 +98,21 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: TextButton(
                       onPressed: () {
                         losefocus(context);
+
                         if (_formKey.currentState!.validate()) {
+                          if (otpRequested) {
+                            context.go("/home");
+                          }
                           // debugPrint(_phone);
-                          context.go("/otp");
+                          setState(() {
+                            otpRequested = true;
+                          });
                         }
                       },
-                      child: const Text("Send OTP", style: TextStyle(color: white, fontSize: 20)),
+                      child: Text(
+                        otpRequested ? "Sign UP" : "Send OTP",
+                        style: const TextStyle(color: white, fontSize: 20),
+                      ),
                     ),
                   )
                 ],
