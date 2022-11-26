@@ -1,7 +1,6 @@
 import 'package:ehh/constants/spacing.dart';
 import 'package:ehh/constants/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -15,7 +14,11 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  PhoneNumber _phone = PhoneNumber();
+  PhoneNumber _phone = PhoneNumber(isoCode: 'CZ');
+
+  void updatePhone(PhoneNumber newNumber) {
+    _phone = newNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,8 @@ class _AuthScreenState extends State<AuthScreen> {
                       vertical: Spacing.screenPadding,
                     ),
                     child: InternationalPhoneNumberInput(
-                      onInputChanged: (value) => _phone = value,
+                      initialValue: _phone,
+                      onInputChanged: updatePhone,
                     ),
                   ),
                   Container(
@@ -49,7 +53,8 @@ class _AuthScreenState extends State<AuthScreen> {
                           // debugPrint(_phone);
                         }
                       },
-                      child: const Text("Send OTP", style: TextStyle(color: white, fontSize: 20)),
+                      child: const Text("Send OTP",
+                          style: TextStyle(color: white, fontSize: 20)),
                     ),
                   )
                 ],
