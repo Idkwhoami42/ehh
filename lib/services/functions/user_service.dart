@@ -56,4 +56,14 @@ class UserService {
       return;
     }
   }
+
+  Future<void> updateFcmToken(String userId, String token) async {
+    HttpsCallable updateFcmToken =
+        _functions.httpsCallable("users-updateFcmToken");
+    await updateFcmToken.call({
+      "userId": userId,
+      "token": token,
+    });
+    return;
+  }
 }
