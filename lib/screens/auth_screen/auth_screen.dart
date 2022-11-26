@@ -1,5 +1,7 @@
 import 'package:ehh/constants/spacing.dart';
 import 'package:ehh/constants/theme.dart';
+import 'package:ehh/services/functions/user_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -15,17 +17,54 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  PhoneNumber _phone = PhoneNumber(isoCode: 'CZ');
+  PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'CZ');
   String _otp = "";
   bool otpRequested = false, isCertified = false;
   String correctOTP = "000000"; // to change
+  bool _loading = false;
 
   void updatePhone(PhoneNumber newNumber) {
-    _phone = newNumber;
+    _phoneNumber = newNumber;
   }
 
   void updateOPT(String otp) {
     _otp = otp;
+  }
+
+  void login() {
+    setState(() => _loading = true);
+    UserService()
+        .verifyPhoneNumber(
+      _phoneNumber.toString(),
+      _verificationFailed,
+      startVerification,
+    )
+        .onError((Object error, stackTrace) {
+      setState(() => _loading = false);
+      handleUnknownError(error);
+      throw (error);
+    });
+  }
+
+  void _verificationFailed(FirebaseAuthException e) {
+    return;
+  }
+
+  void startVerification({
+    String? verificationId,
+    int? resendToken,
+    // ConfirmationResult? webResult,
+  }) {
+    setState(() => _loading = false);
+    Navigator.pushNamed(
+      context,
+      Routes.LoginVerification.buildPath(),
+      arguments: LoginVerificationScreenDependencies(
+        phoneNumber: _phoneNumber,
+        verificationId: verificationId,
+        // webConfirmation: webResult,
+      ),
+    );
   }
 
   @override
@@ -46,7 +85,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       vertical: Spacing.screenPadding,
                     ),
                     child: InternationalPhoneNumberInput(
-                      initialValue: _phone,
+                      initialValue: _phoneNumber,
                       onInputChanged: updatePhone,
                       cursorColor: black,
                     ),
