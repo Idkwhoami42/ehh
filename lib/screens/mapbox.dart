@@ -58,11 +58,9 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   void _add() {
     controller!.addCircle(
       CircleOptions(
-          geometry: LatLng(
-            center.latitude + sin(_circleCount * pi / 6.0) / 20.0,
-            center.longitude + cos(_circleCount * pi / 6.0) / 20.0,
-          ),
-          circleColor: "#FF0000"),
+        geometry: LatLng(50.02, 14.463),
+        circleColor: "#FF00000",
+      ),
     );
     setState(() {
       _circleCount += 1;
