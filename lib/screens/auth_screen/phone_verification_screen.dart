@@ -26,6 +26,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   String? verificationError;
 
   Future<void> _verifyAndLogin() async {
+    context.pushNamed(RouteNames.home);
+
     if (_formKey.currentState!.validate()) {
       _loading = true;
     }
