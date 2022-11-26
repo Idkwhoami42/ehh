@@ -2,6 +2,7 @@ import 'package:ehh/screens/auth_screen/auth_screen.dart';
 import 'package:ehh/screens/emergency.dart';
 import 'package:ehh/screens/home/home_screen.dart';
 import 'package:ehh/screens/mapScreen.dart';
+import 'package:ehh/screens/mapbox.dart';
 import 'package:ehh/screens/settings/settings_dart.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,6 +27,7 @@ final router = GoRouter(
       },
     ),
     GoRoute(path: "/", builder: (contex, state) => EmergencyScreen()),
-    GoRoute(path: "/map", builder: (contex, state) => MapScreen())
+    GoRoute(path: "/map", builder: (contex, state) => MapScreen()),
+    GoRoute(path: "/mapBox", builder: (context, state) => PlaceCircleBody())
   ],
 );

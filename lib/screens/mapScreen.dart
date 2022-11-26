@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:ehh/constants/theme.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({Key? key}) : super(key: key);
@@ -15,7 +19,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   List<String> messages = ["Help me", "No fuck you"];
 
-  final Completer<GoogleMapController> _controller = Completer();
+  // final Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition mapview = CameraPosition(
     bearing: 0,
@@ -23,8 +27,22 @@ class _MapScreenState extends State<MapScreen> {
     zoom: 15,
   );
 
+  MapboxMapController? mapController;
+  LocationData? location;
+  var isLight = true;
+
+  _onMapCreated(MapboxMapController controller) async {
+    mapController = controller;
+    location = await Location().getLocation();
+  }
+
+  final String mapboxapi = FlutterConfig.get("MAPBOXAPI");
+
+
   @override
   Widget build(BuildContext context) {
+    
+
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
         builder: (ctx) => Scaffold(
@@ -48,12 +66,11 @@ class _MapScreenState extends State<MapScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      child: GoogleMap(
-                        mapType: MapType.normal,
-                        initialCameraPosition: mapview,
-                        onMapCreated: (GoogleMapController controller) {
-                          _controller.complete(controller);
-                        },
+                      child: MapboxMap(
+                        styleString: !isLight ? MapboxStyles.LIGHT : MapboxStyles.DARK,
+                        accessToken: FlutterConfig.get("MAPBOXAPI"),
+                        onMapCreated: _onMapCreated,
+                        initialCameraPosition: CameraPosition(target: LatLng(location!.latitude!, location!.longitude!)),
                       ),
                     ),
                   ),

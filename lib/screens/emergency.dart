@@ -31,7 +31,7 @@ class EmergencyScreenState extends State<EmergencyScreen> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        context.go("/map");
+                        context.go("/mapBox");
                       },
                       child: const Text("Accept", style: TextStyle(fontSize: 30, color: Colors.green)),
                     ),
