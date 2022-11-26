@@ -59,10 +59,10 @@ class UserService {
 
   Future<void> updateFcmToken(String userId, String token) async {
     HttpsCallable updateFcmToken =
-        _functions.httpsCallable("users-updateFcmToken");
+        _functions.httpsCallable("users-updateDeviceToken");
     await updateFcmToken.call({
       "userId": userId,
-      "token": token,
+      "deviceToken": token,
     });
     return;
   }

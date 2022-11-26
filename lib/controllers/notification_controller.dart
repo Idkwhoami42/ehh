@@ -1,4 +1,5 @@
 import 'package:ehh/models/user_data.dart';
+import 'package:ehh/services/functions/user_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,11 +26,10 @@ class NotificationController extends ChangeNotifier {
 
     String? token = await FirebaseMessaging.instance.getToken();
 
-    if (token != _currentFcmToken) {
+    if (token != _currentFcmToken && token != null) {
       _currentFcmToken = token;
+      UserService().updateFcmToken(newUser.id, token);
     }
-
-    // TODO: save token in db
   }
 }
 
