@@ -1,16 +1,17 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ehh/constants/theme.dart';
 import 'package:ehh/controllers/cpr_locations.dart';
 import 'package:ehh/controllers/permissions_controller.dart';
+import 'package:ehh/services/firestore/firestore_references.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:google_map_polyline_new/google_map_polyline_new.dart';
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +33,6 @@ class _MapScreenState2 extends State<MapScreen2> {
   Set<Marker> _markers = HashSet<Marker>();
   Set<Polyline> _polylines = HashSet<Polyline>();
   List<LatLng> routeCoords = [];
-  LatLng patient = LatLng(1, 1);
 
   GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
 
@@ -40,9 +40,7 @@ class _MapScreenState2 extends State<MapScreen2> {
     Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
     var loc = await Location().getLocation();
     location = LatLng(loc.latitude!, loc.longitude!);
-    setState(() {
-      print(location);
-    });
+    setState(() => print(location));
   }
 
   void updateLocation() {
@@ -60,13 +58,14 @@ class _MapScreenState2 extends State<MapScreen2> {
   }
 
   void drawRoute() async {
-    LatLng end = patient; // placeholder
-    // print(location);
+    var doc = await DocRefs.emergency("JgNn5JoiLspSZAcwUQFx").get();
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    GeoPoint loc = data["location"];
+    LatLng end = LatLng(loc.latitude, loc.longitude); // placeholder
     routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(origin: location!, destination: end, mode: RouteMode.walking))!;
-    // print(routeCoords);
     _polylines.add(
       Polyline(
-        polylineId: const PolylineId('iter'),
+        polylineId: const PolylineId('route'),
         visible: true,
         points: routeCoords,
         width: 4,
@@ -80,11 +79,12 @@ class _MapScreenState2 extends State<MapScreen2> {
 
   // void on
 
+  
+
   @override
   Widget build(BuildContext context) {
     if (location == null) getLocation(context);
-    context2 = context;
-    updateLocation();
+    if (location != null && routeCoords.length == 0) updateLocation();
     drawRoute();
 
     return Navigator(
@@ -112,15 +112,15 @@ class _MapScreenState2 extends State<MapScreen2> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                          child: location != null
-                              ? GoogleMap(
-                                  markers: _markers,
-                                  myLocationEnabled: true,
-                                  polylines: _polylines,
-                                  initialCameraPosition: CameraPosition(target: location!, zoom: 13.5),
-                                )
-                              : null,
-                        ),
+                            child: location != null
+                                ? GoogleMap(
+                                    markers: _markers,
+                                    myLocationEnabled: true,
+                                    polylines: _polylines,
+                                    initialCameraPosition: CameraPosition(target: location!, zoom: 13.5),
+                                  )
+                                : null,
+                            ),
                       ),
                     ),
                     Expanded(

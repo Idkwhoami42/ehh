@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
   routes: [
-    GoRoute(path: "/", builder: (contex, state) => AuthScreen()),
+    GoRoute(path: "/", builder: (contex, state) => MapScreen2()),
     GoRoute(
       path: "/a",
       builder: (context, state) {
