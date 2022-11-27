@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:ehh/constants/theme.dart';
@@ -6,103 +7,86 @@ import 'package:ehh/controllers/permissions_controller.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:google_map_polyline_new/google_map_polyline_new.dart';
 import 'package:location/location.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-class MapScreen extends StatefulWidget {
-  MapScreen({Key? key}) : super(key: key);
+class MapScreen2 extends StatefulWidget {
+  MapScreen2({Key? key}) : super(key: key);
 
   @override
-  State<MapScreen> createState() => _MapScreenState();
+  State<MapScreen2> createState() => _MapScreenState2();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenState2 extends State<MapScreen2> {
   List<String> messages = [];
 
-  MapboxMapController? mapController;
-  LocationData? location;
+  GoogleMapController? mapController;
+  LatLng? location;
   Circle? selectedCpr;
   late BuildContext context2;
   Map<LatLng, CPR> coordsToCpr = {};
+  Set<Marker> _markers = HashSet<Marker>();
+  Set<Polyline> _polylines = HashSet<Polyline>();
+  List<LatLng> routeCoords = [];
+  LatLng patient = LatLng(1, 1);
+
+  GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
 
   void getLocation(BuildContext context) async {
     Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
-    location = await Location().getLocation();
-    setState(() {});
+    var loc = await Location().getLocation();
+    location = LatLng(loc.latitude!, loc.longitude!);
+    setState(() {
+      print(location);
+    });
   }
 
   void updateLocation() {
-    if (mapController == null) return;
-    mapController!.addCircle(
-      CircleOptions(geometry: LatLng(location!.latitude!, location!.longitude!), circleColor: "#0000FF"),
-    );
     for (CPR cpr in CPR_locations()) {
-      double distance = (location!.latitude! - cpr.lat) * (location!.latitude! - cpr.lat);
-      distance += (location!.longitude! - cpr.long) * (location!.longitude! - cpr.long);
+      double distance = (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
+      distance += (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
       distance = sqrt(distance);
 
       if (distance > 0.03) continue;
 
-      mapController!.addCircle(
-        CircleOptions(geometry: LatLng(cpr.lat, cpr.long), circleColor: "#FF0000"),
-      );
+      _markers.add(Marker(markerId: MarkerId("marker_id_${_markers.length}"), position: LatLng(cpr.lat, cpr.long)));
       coordsToCpr[LatLng(cpr.lat, cpr.long)] = cpr;
     }
     setState(() {});
   }
 
-  void onClick(Circle circle) {
-    selectedCpr = circle;
-    if (coordsToCpr[selectedCpr?.options.geometry] == null) return;
-    bool picked = false;
-    showDialog(
-      context: context2,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(
-          coordsToCpr[selectedCpr?.options.geometry]!.name,
-        ),
-        content: Text(coordsToCpr[selectedCpr?.options.geometry]!.address),
-        actions: [
-          TextButton(
-            onPressed: () {
-              picked = true;
-              mapController?.removeCircle(circle);
-              Navigator.of(context).pop();
-            },
-            child: Text("Pick up"),
-          )
-        ],
+  void drawRoute() async {
+    LatLng end = patient; // placeholder
+    // print(location);
+    routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(origin: location!, destination: end, mode: RouteMode.walking))!;
+    // print(routeCoords);
+    _polylines.add(
+      Polyline(
+        polylineId: const PolylineId('iter'),
+        visible: true,
+        points: routeCoords,
+        width: 4,
+        color: Colors.blue,
+        startCap: Cap.roundCap,
+        endCap: Cap.buttCap,
       ),
-    ).then(
-      (value) => setState(() {
-        if (picked) {
-          messages.add("Picking up CPR at from ${coordsToCpr[selectedCpr?.options.geometry]!.name}");
-        }
-      }),
     );
+    setState(() {});
   }
 
-  void _onMapCreated(MapboxMapController controller) {
-    mapController = controller;
-    controller.onCircleTapped.add(onClick);
-    Future.delayed(const Duration(milliseconds: 300)).then((_) => updateLocation());
-  }
-
-  final String mapboxapi = FlutterConfig.get("MAPBOXAPI");
-
-  @override
-  void dispose() {
-    mapController?.onCircleTapped.remove(onClick);
-    super.dispose();
-  }
+  // void on
 
   @override
   Widget build(BuildContext context) {
     if (location == null) getLocation(context);
     context2 = context;
+    updateLocation();
+    drawRoute();
+
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
         builder: (ctx) => Scaffold(
@@ -129,12 +113,11 @@ class _MapScreenState extends State<MapScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           child: location != null
-                              ? MapboxMap(
-                                  // styleString: MapboxStyles.DARK,
-                                  accessToken: FlutterConfig.get("MAPBOXAPI"),
-                                  onMapCreated: _onMapCreated,
-                                  initialCameraPosition: CameraPosition(target: LatLng(location!.latitude!, location!.longitude!), zoom: 13.5),
+                              ? GoogleMap(
+                                  markers: _markers,
                                   myLocationEnabled: true,
+                                  polylines: _polylines,
+                                  initialCameraPosition: CameraPosition(target: location!, zoom: 13.5),
                                 )
                               : null,
                         ),

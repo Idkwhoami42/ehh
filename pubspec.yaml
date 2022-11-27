@@ -35,6 +35,7 @@ dependencies:
   flutter_config: ^2.0.0
   go_router: ^5.2.0
   google_fonts: ^3.0.1
+  google_map_polyline_new: ^0.3.0+2
   google_maps_flutter: ^2.2.1
   intl_phone_number_input: ^0.7.1
   location: ^4.4.0
