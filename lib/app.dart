@@ -19,7 +19,7 @@ class App extends StatelessWidget {
       //   );
       // },
       theme: ThemeData(
-        fontFamily: defaultFont,
+        fontFamily: 'Nunito',
         inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.black, width: 2),
