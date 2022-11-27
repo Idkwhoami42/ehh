@@ -113,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.6"
   equatable:
     dependency: transitive
     description:
@@ -233,6 +240,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  google_map_polyline_new:
+    dependency: "direct main"
+    description:
+      name: google_map_polyline_new
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0+2"
   google_maps_flutter:
     dependency: "direct main"
     description:
