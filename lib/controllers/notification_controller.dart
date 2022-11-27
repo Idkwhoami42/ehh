@@ -1,7 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:heartstart/controllers/emergency_controller.dart';
 import 'package:heartstart/models/notification.dart';
+import 'package:provider/provider.dart';
 
 import '../models/user_data.dart';
 import '../services/functions/user_service.dart';
@@ -17,6 +19,8 @@ class NotificationController extends ChangeNotifier {
   Future<void> _init() async {
     FirebaseMessaging.onMessage
         .listen((RemoteMessage message) => _messageReceived(message, _context));
+    FirebaseMessaging.onBackgroundMessage(
+        (message) => _messageReceived(message, _context));
   }
 
   void updateUser(UserData newUser) async {
@@ -32,7 +36,8 @@ class NotificationController extends ChangeNotifier {
 }
 
 @pragma('vm:entry-point')
-void _messageReceived(RemoteMessage message, BuildContext? context) {
+Future<void> _messageReceived(
+    RemoteMessage message, BuildContext? context) async {
   Map<String, dynamic> payload = message.data;
   String? messageType = payload["msgType"];
 
@@ -51,9 +56,15 @@ void handleNewEmergencyNotification(
   if (context == null) {
     return;
   }
-  String emergencyId = payload["emergencyId"];
 
   // If there's already an ongoing emergency, don't interrupt this responder
+  bool emergencyIsOngoing =
+      Provider.of<EmergencyController>(context, listen: false).isOngoing;
+  if (emergencyIsOngoing) {
+    return;
+  }
+
+  String newEmergencyId = payload["emergencyId"];
 
   showBottomSheet(
     context: context,
@@ -72,8 +83,8 @@ void handleNewEmergencyNotification(
                 children: [
                   TextButton(
                     onPressed: () {
-                      context.goNamed("map", queryParams: {
-                        "emergencyId": emergencyId,
+                      context.goNamed("emergency", queryParams: {
+                        "emergencyId": newEmergencyId,
                       });
                     },
                     child: const Text(

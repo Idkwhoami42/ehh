@@ -22,15 +22,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => PermissionsController()),
         ChangeNotifierProvider(create: (_) => AuthController()),
-        ChangeNotifierProvider(
-            create: (context) => NotificationController(context)),
+        // ChangeNotifierProvider(
+        //     create: (context) => NotificationController(context)),
         ChangeNotifierProvider(create: (context) => EmergencyController()),
-        ChangeNotifierProxyProvider2<AuthController, EmergencyController,
-            NotificationController>(
+        ChangeNotifierProxyProvider<AuthController, NotificationController>(
           create: (context) => NotificationController(context),
           lazy: false,
-          update: (context, authController, emergencyController,
-              notificationController) {
+          update: (context, authController, notificationController) {
             try {
               notificationController ??= NotificationController(context);
               UserData? currentUser = authController.currentUser;

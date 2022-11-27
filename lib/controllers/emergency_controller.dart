@@ -13,7 +13,10 @@ class EmergencyController extends ChangeNotifier {
   Emergency? get emergency => _emergency;
   Emergency? _emergency;
 
-  EmergencyController();
+  EmergencyController() {
+    _emergency = null;
+    _emergencyStream = null;
+  }
 
   void startEmergency(String emergencyId) {
     DocumentReference emergencyDocRef = DocRefs.emergency(emergencyId);

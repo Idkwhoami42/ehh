@@ -48,7 +48,7 @@ class _MapScreenState2 extends State<MapScreen2> {
 
   @override
   void initState() {
-    EmergencyController emergencyController = EmergencyController();
+    // EmergencyController emergencyController = EmergencyController();
 
     emergencyId = widget.emergencyId; // may be null
     if (emergencyId != null) {

@@ -32,7 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    await Provider.of<AuthController>(context, listen: false).logIn(_phoneNumber.phoneNumber!);
+    await Provider.of<AuthController>(context, listen: false)
+        .logIn(_phoneNumber.phoneNumber!);
   }
 
   @override
@@ -53,14 +54,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     // LOGO
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Icon(Icons.favorite_border_rounded, color: Colors.red, size: 70.0),
+                      Icon(Icons.favorite_border_rounded,
+                          color: Colors.red, size: 70.0),
                       SizedBox(width: 15),
                       Column(children: [
                         Text(
                           "HEARTSTART",
-                          style: const TextStyle(color: Color.fromRGBO(255, 0, 0, 1.0), fontSize: 30, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                              color: Color.fromRGBO(255, 0, 0, 1.0),
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700),
                         ),
-                        Text("Save hearts with love", style: TextStyle(color: Color.fromRGBO(240, 0, 0, 1.0), fontSize: 20, fontWeight: FontWeight.w500))
+                        Text("Save hearts with love",
+                            style: TextStyle(
+                                color: Color.fromRGBO(240, 0, 0, 1.0),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500))
                       ]),
                     ]),
                     SizedBox(height: 200),
@@ -77,11 +86,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           inputDecoration: InputDecoration(
                               errorBorder: InputBorder.none,
                               border: InputBorder.none,
-                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 1.0)),
-                              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2.0)),
+                              enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.0)),
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 2.0)),
                               hintText: 'Your phone number',
-                              hintStyle: TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w200)),
-                          selectorConfig: SelectorConfig(selectorType: PhoneInputSelectorType.BOTTOM_SHEET),
+                              hintStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w200)),
+                          selectorConfig: SelectorConfig(
+                              selectorType:
+                                  PhoneInputSelectorType.BOTTOM_SHEET),
                           onInputChanged: updatePhone),
                     ),
                     SizedBox(height: 25),
@@ -96,8 +114,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: TextButton(
                             onPressed: () async => {await _login()},
                             child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
-                              child: Text("Log in", style: TextStyle(color: white, fontSize: 17, fontWeight: FontWeight.w700)),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 7.0),
+                              child: Text("Log in",
+                                  style: TextStyle(
+                                      color: white,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700)),
                             ),
                           ),
                         ),
@@ -113,10 +136,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: TextButton(
                             onPressed: () async => context.go('/register'),
                             child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 7.0),
                               child: Text(
                                 "Sign up",
-                                style: TextStyle(color: white, fontSize: 17, fontWeight: FontWeight.w700),
+                                style: TextStyle(
+                                    color: white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700),
                               ),
                             ),
                           ),
@@ -132,7 +159,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: TextButton(
                           onPressed: () => {
-                            context.go('/map'),
+                            // context.go('/map'),
+                            context.goNamed("emergency", queryParams: {
+                              "emergencyId": "tssTCJSDe8cqs11UvgS9",
+                            }),
                           },
                           child: Text(
                             "Open map",

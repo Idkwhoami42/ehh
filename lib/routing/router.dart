@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:heartstart/screens/emergency.dart';
 
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
@@ -39,6 +40,15 @@ final router = GoRouter(
       builder: (context, state) {
         return MapScreen2(
           emergencyId: state.queryParams["emergencyId"],
+        );
+      },
+    ),
+    GoRoute(
+      name: "emergency",
+      path: "/emergency",
+      builder: (context, state) {
+        return EmergencyScreen(
+          emergencyId: state.queryParams["emergencyId"]!,
         );
       },
     ),
