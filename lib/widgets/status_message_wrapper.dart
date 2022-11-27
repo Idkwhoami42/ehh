@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:heartstart/constants/theme.dart';
+import 'package:heartstart/controllers/emergency_controller.dart';
 import 'package:heartstart/models/status_message.dart';
+import 'package:provider/provider.dart';
 
-class _StatusMessagesWrapper extends StatefulWidget {
-  const _StatusMessagesWrapper({
+class StatusMessagesWrapper extends StatefulWidget {
+  const StatusMessagesWrapper({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<_StatusMessagesWrapper> createState() => _StatusMessagesWrapperState();
+  State<StatusMessagesWrapper> createState() => _StatusMessagesWrapperState();
 }
 
-class _StatusMessagesWrapperState extends State<_StatusMessagesWrapper> {
+class _StatusMessagesWrapperState extends State<StatusMessagesWrapper> {
   List<StatusMessage> messages = [];
+  EmergencyController? emergencyController;
+
+  @override
+  void initState() {
+    emergencyController =
+        Provider.of<EmergencyController>(context, listen: false);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

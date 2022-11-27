@@ -2,12 +2,14 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
 import 'package:google_map_polyline_new/google_map_polyline_new.dart';
-import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:heartstart/controllers/emergency_controller.dart';
+import 'package:heartstart/widgets/status_message_wrapper.dart';
+import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +19,12 @@ import '../controllers/permission_controller.dart';
 import '../services/firestore/firestore_references.dart';
 
 class MapScreen2 extends StatefulWidget {
-  MapScreen2({Key? key}) : super(key: key);
+  const MapScreen2({
+    Key? key,
+    this.emergencyId,
+  }) : super(key: key);
+
+  final String? emergencyId;
 
   @override
   State<MapScreen2> createState() => _MapScreenState2();
@@ -34,11 +41,26 @@ class _MapScreenState2 extends State<MapScreen2> {
   Set<Marker> _markers = HashSet<Marker>();
   Set<Polyline> _polylines = HashSet<Polyline>();
   List<LatLng> routeCoords = [];
+  String? emergencyId;
 
-  GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
+  GoogleMapPolyline googleMapPolyline =
+      GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
+
+  @override
+  void initState() {
+    EmergencyController emergencyController = EmergencyController();
+
+    emergencyId = widget.emergencyId; // may be null
+    if (emergencyId != null) {
+      EmergencyController emergencyController = EmergencyController();
+      emergencyController.startEmergency(emergencyId!);
+    }
+    super.initState();
+  }
 
   void getLocation(BuildContext context) async {
-    Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
+    Provider.of<PermissionsController>(context, listen: false)
+        .requestPermission([Permission.location]);
     var loc = await Location().getLocation();
     location = LatLng(loc.latitude!, loc.longitude!);
     setState(() => print(location));
@@ -46,24 +68,33 @@ class _MapScreenState2 extends State<MapScreen2> {
 
   void updateLocation() {
     for (CPR cpr in CPR_locations()) {
-      double distance = (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
-      distance += (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
+      double distance =
+          (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
+      distance +=
+          (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
       distance = sqrt(distance);
 
       if (distance > 0.03) continue;
 
-      _markers.add(Marker(markerId: MarkerId("marker_id_${_markers.length}"), position: LatLng(cpr.lat, cpr.long)));
+      _markers.add(Marker(
+          markerId: MarkerId("marker_id_${_markers.length}"),
+          position: LatLng(cpr.lat, cpr.long)));
       coordsToCpr[LatLng(cpr.lat, cpr.long)] = cpr;
     }
     setState(() {});
   }
 
   void drawRoute() async {
-    var doc = await DocRefs.emergency("JgNn5JoiLspSZAcwUQFx").get();
+    if (emergencyId == null) {
+      return;
+    }
+    var doc = await DocRefs.emergency(emergencyId!).get();
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    GeoPoint loc = data["location"];
+    GeoPoint? loc = data["location"];
+    if (loc == null) return;
     LatLng end = LatLng(loc.latitude, loc.longitude); // placeholder
-    routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(origin: location!, destination: end, mode: RouteMode.walking))!;
+    routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(
+        origin: location!, destination: end, mode: RouteMode.walking))!;
     _polylines.add(
       Polyline(
         polylineId: const PolylineId('route'),
@@ -85,6 +116,13 @@ class _MapScreenState2 extends State<MapScreen2> {
     if (location == null) getLocation(context);
     if (location != null && _markers.isEmpty) drawRoute();
     if (location != null && routeCoords.isEmpty) drawRoute();
+
+    EmergencyController emergencyController =
+        context.watch<EmergencyController>();
+
+    if (emergencyController.emergency != null) {
+      drawRoute();
+    }
 
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
@@ -116,7 +154,8 @@ class _MapScreenState2 extends State<MapScreen2> {
                                   markers: _markers,
                                   myLocationEnabled: true,
                                   polylines: _polylines,
-                                  initialCameraPosition: CameraPosition(target: location!, zoom: 13.5),
+                                  initialCameraPosition: CameraPosition(
+                                      target: location!, zoom: 13.5),
                                 )
                               : null,
                         ),
@@ -128,35 +167,7 @@ class _MapScreenState2 extends State<MapScreen2> {
                         child: Container(color: Colors.blue),
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          color: Colors.red,
-                          child: ListView.builder(
-                            itemCount: messages.length,
-                            itemBuilder: ((context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Container(
-                                  width: 30,
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.cyan,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    messages[index % messages.length],
-                                    style: TextStyle(color: white, fontSize: 18),
-                                  ),
-                                ),
-                              );
-                            }),
-                          ),
-                        ),
-                      ),
-                    ),
+                    StatusMessagesWrapper(),
                   ],
                 ),
               ),

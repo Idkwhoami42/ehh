@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:heartstart/controllers/emergency_controller.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart';
@@ -21,15 +22,25 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => PermissionsController()),
         ChangeNotifierProvider(create: (_) => AuthController()),
-        ChangeNotifierProxyProvider<AuthController, NotificationController>(
+        ChangeNotifierProvider(
+            create: (context) => NotificationController(context)),
+        ChangeNotifierProvider(create: (context) => EmergencyController()),
+        ChangeNotifierProxyProvider2<AuthController, EmergencyController,
+            NotificationController>(
           create: (context) => NotificationController(context),
-          update: (context, authController, notificationController) {
-            notificationController ??= NotificationController(context);
-            UserData? currentUser = authController.currentUser;
-            if (currentUser != null) {
-              notificationController.updateUser(currentUser);
+          lazy: false,
+          update: (context, authController, emergencyController,
+              notificationController) {
+            try {
+              notificationController ??= NotificationController(context);
+              UserData? currentUser = authController.currentUser;
+              if (currentUser != null) {
+                notificationController.updateUser(currentUser);
+              }
+            } catch (e) {
+              debugPrint(e.toString());
             }
-            return notificationController;
+            return NotificationController(context);
           },
         ),
       ],

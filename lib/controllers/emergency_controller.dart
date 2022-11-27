@@ -8,21 +8,17 @@ import 'package:heartstart/services/firestore/firestore_references.dart';
 class EmergencyController extends ChangeNotifier {
   StreamSubscription? _emergencyStream;
 
-  bool get isOngoing => _isOngoing;
-  bool _isOngoing = false;
+  bool get isOngoing => _emergency?.ongoing ?? false;
 
   Emergency? get emergency => _emergency;
   Emergency? _emergency;
 
   EmergencyController();
 
-  void _init(String emergencyId) {}
-
   void startEmergency(String emergencyId) {
     DocumentReference emergencyDocRef = DocRefs.emergency(emergencyId);
     _emergencyStream =
         emergencyDocRef.snapshots().listen((event) => onEmergencyUpdate);
-    _isOngoing = true;
 
     // If somehow an ended emergency was accepted, end it here
     if (_emergency?.ongoing == true) {
@@ -37,7 +33,6 @@ class EmergencyController extends ChangeNotifier {
   void endEmergency() {
     _emergencyStream?.cancel();
     _emergency = null;
-    _isOngoing = false;
   }
 
   @override

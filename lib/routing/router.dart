@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 
-import '../screens/login_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/login_screen.dart';
 import '../screens/mapScreen.dart';
 import '../screens/register_screen.dart';
 import '../screens/settings.dart';
@@ -34,9 +34,12 @@ final router = GoRouter(
       },
     ),
     GoRoute(
+      name: "map",
       path: "/map",
       builder: (context, state) {
-        return MapScreen2();
+        return MapScreen2(
+          emergencyId: state.queryParams["emergencyId"],
+        );
       },
     ),
   ],
