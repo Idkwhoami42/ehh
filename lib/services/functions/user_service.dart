@@ -1,11 +1,12 @@
 import 'dart:developer';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:ehh/constants/firebase_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserService {
   final _functions = FirebaseFunctions.instanceFor(region: functionsRegion);
+  
+  static get functionsRegion => null;
 
   Future<void> register(String firstName, String lastName, String phoneNumber,
       bool hasTraining) async {

@@ -1,9 +1,5 @@
 import UIKit
 import Flutter
-import flutter_config
-
-// FlutterConfigPlugin.env(for: "MAPS_API")
-
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {

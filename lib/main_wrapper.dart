@@ -1,5 +1,6 @@
-import 'package:ehh/constants/spacing.dart';
 import 'package:flutter/material.dart';
+
+import 'constants/spacing.dart';
 
 class MainWrapper extends StatelessWidget {
   const MainWrapper({

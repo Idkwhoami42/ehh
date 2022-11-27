@@ -1,13 +1,14 @@
-import 'package:ehh/app.dart';
-import 'package:ehh/constants/firebase_options.dart';
-import 'package:ehh/controllers/auth_controller.dart';
-import 'package:ehh/controllers/notification_controller.dart';
-import 'package:ehh/controllers/permissions_controller.dart';
-import 'package:ehh/models/user_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:provider/provider.dart';
+
+import 'app.dart';
+import 'constants/firebase_options.dart';
+import 'controllers/auth_controller.dart';
+import 'controllers/notification_controller.dart';
+import 'controllers/permission_controller.dart';
+import 'models/user_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig

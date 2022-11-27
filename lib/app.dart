@@ -1,6 +1,7 @@
-import 'package:ehh/constants/theme.dart';
-import 'package:ehh/routing/router.dart';
 import 'package:flutter/material.dart';
+import 'package:heartstart/routing/router.dart';
+
+import 'constants/theme.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -12,12 +13,6 @@ class App extends StatelessWidget {
       routerConfig: router,
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      // builder: (context, child) {
-      //   return MultiProvider(
-      //     providers: [],
-      //     child: child,
-      //   );
-      // },
       theme: ThemeData(
         fontFamily: defaultFont,
         inputDecorationTheme: InputDecorationTheme(

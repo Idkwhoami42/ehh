@@ -1,10 +1,12 @@
-import 'package:ehh/constants/spacing.dart';
-import 'package:ehh/constants/theme.dart';
-import 'package:ehh/controllers/auth_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:heartstart/controllers/auth_controller.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
+
+import '../constants/spacing.dart';
+import '../constants/theme.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({

@@ -1,16 +1,15 @@
-import 'package:ehh/screens/auth_screen/auth_screen.dart';
-import 'package:ehh/screens/home/home_screen.dart';
-import 'package:ehh/screens/mapScreen.dart';
-import 'package:ehh/screens/mapScreen2.dart';
-import 'package:ehh/screens/mapbox.dart';
-import 'package:ehh/screens/settings/settings_dart.dart';
 import 'package:go_router/go_router.dart';
+
+import '../screens/auth_screen.dart';
+import '../screens/home_screen.dart';
+import '../screens/mapScreen.dart';
+import '../screens/settings.dart';
 
 final router = GoRouter(
   routes: [
     GoRoute(path: "/", builder: (contex, state) => MapScreen2()),
     GoRoute(
-      path: "/a",
+      path: "/auth",
       builder: (context, state) {
         return AuthScreen();
       },
@@ -27,8 +26,5 @@ final router = GoRouter(
         return SettingsScreen();
       },
     ),
-    GoRoute(path: "/map", builder: (contex, state) => MapScreen()),
-    GoRoute(path: "/mapBox", builder: (context, state) => PlaceCircleBody()),
-    GoRoute(path: "/map2", builder: ((context, state) => MapScreen2())),
   ],
 );

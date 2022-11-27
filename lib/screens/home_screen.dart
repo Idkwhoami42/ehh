@@ -1,5 +1,6 @@
-import 'package:ehh/constants/theme.dart';
 import 'package:flutter/material.dart';
+
+import '../constants/theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);

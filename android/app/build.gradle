@@ -22,10 +22,12 @@ if (flutterVersionName == null) {
 }
 
 apply plugin: 'com.android.application'
+// START: FlutterFire Configuration
+apply plugin: 'com.google.gms.google-services'
+// END: FlutterFire Configuration
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply from: project(':flutter_config').projectDir.getPath() + "/dotenv.gradle"
-
 
 android {
     compileSdkVersion 33
@@ -46,7 +48,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.ehh"
+        applicationId "com.example.heartstart"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 21
@@ -70,24 +72,4 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.mapbox.maps:android:10.9.1'
-}
-
-
-allprojects {
-    repositories {
-        maven {
-              url 'https://api.mapbox.com/downloads/v2/releases/maven'
-              authentication {
-                  basic(BasicAuthentication)
-              }
-              credentials {
-                // Do not change the username below.
-                // This should always be `mapbox` (not your username).
-                  username = "mapbox"
-                  // Use the secret token you stored in gradle.properties as the password
-                  password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
-              }
-          }
-    }
 }

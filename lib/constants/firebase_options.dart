@@ -28,10 +28,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -51,7 +48,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD5rjAxuYvgZBXsWtgDiRChCq8mqtKckzA',
-    appId: '1:919292181373:android:c4e1f77120a3c34061ea14',
+    appId: '1:919292181373:android:b62f014671a3ce6a61ea14',
     messagingSenderId: '919292181373',
     projectId: 'ehh-sleepers-shn',
     storageBucket: 'ehh-sleepers-shn.appspot.com',
@@ -59,14 +56,23 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB0TUuSHEKy7R4Yss-9T3PWac21LngeqRo',
-    appId: '1:919292181373:ios:2d4a1ce5737d7a4361ea14',
+    appId: '1:919292181373:ios:f4cd02696bfe30d361ea14',
     messagingSenderId: '919292181373',
     projectId: 'ehh-sleepers-shn',
     storageBucket: 'ehh-sleepers-shn.appspot.com',
-    androidClientId:
-        '919292181373-1h164iqt2ntj7bsq9ol1or74rvnvpoj6.apps.googleusercontent.com',
-    iosClientId:
-        '919292181373-7s262psceefa1okrktpvm7ckn0rnai3b.apps.googleusercontent.com',
-    iosBundleId: 'com.example.ehh',
+    androidClientId: '919292181373-1h164iqt2ntj7bsq9ol1or74rvnvpoj6.apps.googleusercontent.com',
+    iosClientId: '919292181373-pri0ersne97d9aumfg8jo0gfa170einr.apps.googleusercontent.com',
+    iosBundleId: 'com.example.heartstart',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyB0TUuSHEKy7R4Yss-9T3PWac21LngeqRo',
+    appId: '1:919292181373:ios:f4cd02696bfe30d361ea14',
+    messagingSenderId: '919292181373',
+    projectId: 'ehh-sleepers-shn',
+    storageBucket: 'ehh-sleepers-shn.appspot.com',
+    androidClientId: '919292181373-1h164iqt2ntj7bsq9ol1or74rvnvpoj6.apps.googleusercontent.com',
+    iosClientId: '919292181373-pri0ersne97d9aumfg8jo0gfa170einr.apps.googleusercontent.com',
+    iosBundleId: 'com.example.heartstart',
   );
 }
