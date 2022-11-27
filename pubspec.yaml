@@ -29,10 +29,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  # background_fetch: ^1.1.2
   cloud_firestore: ^4.1.0
   cloud_functions: ^4.0.5
   cupertino_icons: ^1.0.2
+  dio: ^4.0.6
   firebase_auth: ^4.1.4
   firebase_core: ^2.3.0
   firebase_messaging: ^14.1.2
@@ -63,7 +63,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

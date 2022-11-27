@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +25,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  List<String> messages = [
-    "[14:12] Jane is picking up the defibrilator",
-    "[14:13] Omar is on route to emergency"
-  ];
+  List<String> messages = ["[14:12] Jane is picking up the defibrilator", "[14:13] Omar is on route to emergency"];
 
   GoogleMapController? mapController;
   LatLng? location;
@@ -37,48 +35,77 @@ class _MapScreenState extends State<MapScreen> {
   Set<Marker> _markers = HashSet<Marker>();
   Set<Polyline> _polylines = HashSet<Polyline>();
   List<LatLng> routeCoords = [];
+  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor markerIcon2 = BitmapDescriptor.defaultMarker;
+  int markercount = 0;
 
-  GoogleMapPolyline googleMapPolyline =
-      GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
+  GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
+
+  void addCustomIcon() {
+    BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(),
+      "assets/AED.png",
+    ).then((icon) {
+      setState(() {
+        markerIcon = icon;
+      });
+    });
+    BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(),
+      "assets/patient.png",
+    ).then((icon) {
+      setState(() {
+        markerIcon2 = icon;
+      });
+    });
+  }
 
   void getLocation(BuildContext context) async {
-    Provider.of<PermissionsController>(context, listen: false)
-        .requestPermission([Permission.location]);
+    Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
     var loc = await Location().getLocation();
     location = LatLng(loc.latitude!, loc.longitude!);
     setState(() => print(location));
   }
 
-  void updateLocation() {
+  void updateLocation() async {
     for (CPR cpr in CPR_locations()) {
-      double distance =
-          (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
-      distance +=
-          (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
+      double distance = (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
+      distance += (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
       distance = sqrt(distance);
-
+      MarkerId id = MarkerId("marker_id_$markercount");
       if (distance > 0.03) continue;
       Marker marker = Marker(
-        markerId: MarkerId("marker_id_${_markers.length}"),
+        markerId: id,
         position: LatLng(cpr.lat, cpr.long),
+        icon: markerIcon,
+        onTap: () => onClick(id),
       );
       _markers.add(marker);
-      idToCpr[MarkerId("marker_id_${_markers.length - 1}")] = cpr;
+      idToCpr.putIfAbsent(id, () => cpr);
+      markercount++;
     }
     setState(() {});
   }
 
   void drawRoute() async {
-    var doc = await DocRefs.emergency("JgNn5JoiLspSZAcwUQFx").get();
+    var doc = await DocRefs.emergency("8x4vkdz0g9I4rqzmzoMV").get();
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     GeoPoint loc = data["location"];
     LatLng end = LatLng(loc.latitude, loc.longitude);
+    print(end);
+
     _markers.add(Marker(
-      markerId: MarkerId("marker_id_${_markers.length}"),
+      markerId: MarkerId("marker_id_$markercount"),
       position: LatLng(end.latitude, end.longitude),
+      icon: markerIcon2,
     ));
+
     routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(
-        origin: location!, destination: end, mode: RouteMode.walking))!;
+      origin: location!,
+      destination: end,
+      mode: RouteMode.walking,
+    ))!;
+
     _polylines.add(
       Polyline(
         polylineId: const PolylineId('route'),
@@ -93,37 +120,85 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {});
   }
 
-  // void onClick(Marker marker {
-  //   bool remove = false;
-  //   showDialog(
-  //     context: context2,
-  //     builder: (BuildContext context) => AlertDialog(
-  //       title: Text(
-  //         idToCpr[marker]!.name,
-  //       ),
-  //       content: Text(idToCpr[marker]!.address),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () {
-  //             remove = true;
-  //           },
-  //           child: Text("Pick up"),
-  //         )
-  //       ],
-  //     ),
-  //   ).then((value) => setState(() {
-  //         if (remove) {
-  //           _markers.remove(marker);
-  //         }
-  //       },),);
+  void reroute(CPR cpr) async {
+    var doc = await DocRefs.emergency("8x4vkdz0g9I4rqzmzoMV").get();
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    GeoPoint loc = data["location"];
+    LatLng end = LatLng(loc.latitude, loc.longitude);
+    print(end);
+
+    var routeCoords1 = (await googleMapPolyline.getCoordinatesWithLocation(
+      origin: location!,
+      destination: LatLng(cpr.lat, cpr.long),
+      mode: RouteMode.walking,
+    ))!;
+    var routeCoords2 = (await googleMapPolyline.getCoordinatesWithLocation(
+      origin: LatLng(cpr.lat, cpr.long),
+      destination: end,
+      mode: RouteMode.walking,
+    ))!;
+    routeCoords = routeCoords1 + routeCoords2;
+    _polylines.clear();
+    _polylines.add(
+      Polyline(
+        polylineId: const PolylineId('route'),
+        visible: true,
+        points: routeCoords,
+        width: 4,
+        color: Colors.blue,
+        startCap: Cap.roundCap,
+        endCap: Cap.buttCap,
+      ),
+    );
+    setState(() {});
+  }
+
+  void onClick(MarkerId id) {
+    bool remove = false;
+
+    showDialog(
+      context: context2,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(
+          idToCpr[id]!.name,
+        ),
+        content: Text(idToCpr[id]!.address),
+        actions: [
+          TextButton(
+            onPressed: () {
+              remove = true;
+              Navigator.of(context).pop();
+            },
+            child: Text("Pick up"),
+          )
+        ],
+      ),
+    ).then(
+      (value) => setState(
+        () {
+          if (remove) {
+            reroute(idToCpr[id]!);
+            // _markers.remove(_markers.firstWhere((element) => element.markerId == id));
+          }
+        },
+      ),
+    );
+  }
 
   // void on
+
+  @override
+  void initState() {
+    addCustomIcon();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     if (location == null) getLocation(context);
     if (location != null && _markers.isEmpty) updateLocation();
     if (location != null && routeCoords.isEmpty) drawRoute();
+    context2 = context;
 
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
@@ -142,39 +217,44 @@ class _MapScreenState extends State<MapScreen> {
                                 markers: _markers,
                                 myLocationEnabled: true,
                                 polylines: _polylines,
-                                initialCameraPosition: CameraPosition(
-                                    target: location!, zoom: 13.5),
+                                initialCameraPosition: CameraPosition(target: location!, zoom: 13.5),
                               )
                             : null,
                       ),
                     ),
-                    Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                            "Directions: Mariott Hotel, 5th floor, by the bar")),
+                    const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                        "Directions: Mariott Hotel, 5th floor, by the bar",
+                      ),
+                    ),
                     Expanded(
                       flex: 2,
-                      child: Container(
-                        color: Colors.red,
-                        child: ListView.builder(
-                          itemCount: messages.length,
-                          itemBuilder: ((context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                              child: Container(
-                                width: 30,
-                                padding: EdgeInsets.fromLTRB(12, 9, 12, 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          color: Colors.red,
+                          child: ListView.builder(
+                            itemCount: messages.length,
+                            reverse: true,
+                            itemBuilder: ((context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Container(
+                                  width: 30,
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.cyan,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    messages[(messages.length - index - 1)],
+                                    style: TextStyle(color: white, fontSize: 18),
+                                  ),
                                 ),
-                                child: Text(
-                                  messages[index % messages.length],
-                                  style: TextStyle(color: black, fontSize: 15),
-                                ),
-                              ),
-                            );
-                          }),
+                              );
+                            }),
+                          ),
                         ),
                       ),
                     ),
