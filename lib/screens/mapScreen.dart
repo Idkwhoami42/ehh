@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:ehh/constants/theme.dart';
 import 'package:ehh/controllers/cpr_locations.dart';
 import 'package:ehh/controllers/permissions_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -29,7 +30,8 @@ class _MapScreenState extends State<MapScreen> {
   Map<LatLng, CPR> coordsToCpr = {};
 
   void getLocation(BuildContext context) async {
-    Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
+    Provider.of<PermissionsController>(context, listen: false)
+        .requestPermission([Permission.location]);
     location = await Location().getLocation();
     setState(() {});
   }
@@ -37,17 +39,22 @@ class _MapScreenState extends State<MapScreen> {
   void updateLocation() {
     if (mapController == null) return;
     mapController!.addCircle(
-      CircleOptions(geometry: LatLng(location!.latitude!, location!.longitude!), circleColor: "#0000FF"),
+      CircleOptions(
+          geometry: LatLng(location!.latitude!, location!.longitude!),
+          circleColor: "#0000FF"),
     );
     for (CPR cpr in CPR_locations()) {
-      double distance = (location!.latitude! - cpr.lat) * (location!.latitude! - cpr.lat);
-      distance += (location!.longitude! - cpr.long) * (location!.longitude! - cpr.long);
+      double distance =
+          (location!.latitude! - cpr.lat) * (location!.latitude! - cpr.lat);
+      distance +=
+          (location!.longitude! - cpr.long) * (location!.longitude! - cpr.long);
       distance = sqrt(distance);
 
       if (distance > 0.03) continue;
 
       mapController!.addCircle(
-        CircleOptions(geometry: LatLng(cpr.lat, cpr.long), circleColor: "#FF0000"),
+        CircleOptions(
+            geometry: LatLng(cpr.lat, cpr.long), circleColor: "#FF0000"),
       );
       coordsToCpr[LatLng(cpr.lat, cpr.long)] = cpr;
     }
@@ -70,6 +77,8 @@ class _MapScreenState extends State<MapScreen> {
             onPressed: () {
               picked = true;
               mapController?.removeCircle(circle);
+              messages.add(
+                  "Picking up CPR at from ${coordsToCpr[selectedCpr?.options.geometry]!.name}");
               Navigator.of(context).pop();
             },
             child: Text("Pick up"),
@@ -79,7 +88,8 @@ class _MapScreenState extends State<MapScreen> {
     ).then(
       (value) => setState(() {
         if (picked) {
-          messages.add("Picking up CPR at from ${coordsToCpr[selectedCpr?.options.geometry]!.name}");
+          messages.add(
+              "Picking up CPR at from ${coordsToCpr[selectedCpr?.options.geometry]!.name}");
         }
       }),
     );
@@ -88,7 +98,8 @@ class _MapScreenState extends State<MapScreen> {
   void _onMapCreated(MapboxMapController controller) {
     mapController = controller;
     controller.onCircleTapped.add(onClick);
-    Future.delayed(const Duration(milliseconds: 300)).then((_) => updateLocation());
+    Future.delayed(const Duration(milliseconds: 300))
+        .then((_) => updateLocation());
   }
 
   final String mapboxapi = FlutterConfig.get("MAPBOXAPI");
@@ -133,7 +144,10 @@ class _MapScreenState extends State<MapScreen> {
                                   // styleString: MapboxStyles.DARK,
                                   accessToken: FlutterConfig.get("MAPBOXAPI"),
                                   onMapCreated: _onMapCreated,
-                                  initialCameraPosition: CameraPosition(target: LatLng(location!.latitude!, location!.longitude!), zoom: 13.5),
+                                  initialCameraPosition: CameraPosition(
+                                      target: LatLng(location!.latitude!,
+                                          location!.longitude!),
+                                      zoom: 13.5),
                                   myLocationEnabled: true,
                                 )
                               : null,
@@ -144,35 +158,6 @@ class _MapScreenState extends State<MapScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(color: Colors.blue),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          color: Colors.red,
-                          child: ListView.builder(
-                            itemCount: messages.length,
-                            itemBuilder: ((context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Container(
-                                  width: 30,
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.cyan,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    messages[index % messages.length],
-                                    style: TextStyle(color: white, fontSize: 18),
-                                  ),
-                                ),
-                              );
-                            }),
-                          ),
-                        ),
                       ),
                     ),
                   ],
