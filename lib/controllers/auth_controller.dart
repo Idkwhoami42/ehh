@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import '../constants/firebase_functions.dart';
 import '../models/user_data.dart';
-
 
 import '../services/functions/user_service.dart';
 
@@ -32,8 +32,7 @@ class AuthController extends ChangeNotifier {
     _isLoggedIn = false;
   }
 
-  register(String phoneNumber, String firstName, String lastName,
-      bool hasTraining) async {
+  register(String phoneNumber, String firstName, String lastName, bool hasTraining, LocationData loc) async {
     // Call the registration endpoint
     HttpsCallable createUser = _functions.httpsCallable('users-createUser');
     var res = await createUser.call({
@@ -41,18 +40,13 @@ class AuthController extends ChangeNotifier {
       'lastName': lastName,
       'phoneNumber': phoneNumber,
       'hasTraining': hasTraining,
-      'location': {'latitude': 0.0, 'longitude': 0.0},
+      'location': {'latitude': loc.latitude, 'longitude': loc.longitude},
       'deviceToken': await FirebaseMessaging.instance.getToken()
     });
 
     // Check if registration was successful
     if (res.data != "") {
-      _currentUser = UserData(
-          id: res.data as String,
-          firstName: firstName,
-          lastName: lastName,
-          phoneNumber: phoneNumber,
-          hasTraining: hasTraining);
+      _currentUser = UserData(id: res.data as String, firstName: firstName, lastName: lastName, phoneNumber: phoneNumber, hasTraining: hasTraining);
       _isLoggedIn = true;
       return true;
     }
@@ -60,18 +54,30 @@ class AuthController extends ChangeNotifier {
     return false;
   }
 
+  update(LocationData data) async {
+    HttpsCallable updateUser = _functions.httpsCallable("users-updateLocation");
+    var request = {
+      'id': _currentUser!.id,
+      'location': {'latitude': data.latitude, 'longitude': data.longitude}
+    };
+    print(request);
+    var res = await updateUser.call(request);
+  }
 
-  logIn(String phoneNumber) async {
+  Future<bool> logIn(String phoneNumber) async {
     try {
       DocumentSnapshot? doc = await UserService.getUserByPhone(phoneNumber);
       if (doc != null) {
         _currentUser = UserData.fromDoc(doc);
         _isLoggedIn = true;
         notifyListeners();
+        return true;
       }
     } catch (e) {
       debugPrint(e.toString());
     }
+
+    return false;
   }
 
   /// Signs out the current user.

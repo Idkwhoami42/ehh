@@ -16,21 +16,21 @@ import '../controllers/aed_locations.dart';
 import '../controllers/permission_controller.dart';
 import '../services/firestore/firestore_references.dart';
 
-class MapScreen2 extends StatefulWidget {
-  MapScreen2({Key? key}) : super(key: key);
+class MapScreen extends StatefulWidget {
+  MapScreen({Key? key}) : super(key: key);
 
   @override
-  State<MapScreen2> createState() => _MapScreenState2();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState2 extends State<MapScreen2> {
+class _MapScreenState extends State<MapScreen> {
   List<String> messages = [];
 
   GoogleMapController? mapController;
   LatLng? location;
   Circle? selectedCpr;
   late BuildContext context2;
-  Map<LatLng, CPR> coordsToCpr = {};
+  Map<MarkerId, CPR> idToCpr = {};
   Set<Marker> _markers = HashSet<Marker>();
   Set<Polyline> _polylines = HashSet<Polyline>();
   List<LatLng> routeCoords = [];
@@ -51,9 +51,12 @@ class _MapScreenState2 extends State<MapScreen2> {
       distance = sqrt(distance);
 
       if (distance > 0.03) continue;
-
-      _markers.add(Marker(markerId: MarkerId("marker_id_${_markers.length}"), position: LatLng(cpr.lat, cpr.long)));
-      coordsToCpr[LatLng(cpr.lat, cpr.long)] = cpr;
+      Marker marker = Marker(
+          markerId: MarkerId("marker_id_${_markers.length}"),
+          position: LatLng(cpr.lat, cpr.long),
+        );
+      _markers.add(marker);
+      idToCpr[MarkerId("marker_id_${_markers.length - 1}")] = cpr;
     }
     setState(() {});
   }
@@ -62,7 +65,11 @@ class _MapScreenState2 extends State<MapScreen2> {
     var doc = await DocRefs.emergency("JgNn5JoiLspSZAcwUQFx").get();
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     GeoPoint loc = data["location"];
-    LatLng end = LatLng(loc.latitude, loc.longitude); // placeholder
+    LatLng end = LatLng(loc.latitude, loc.longitude);
+    _markers.add(Marker(
+      markerId: MarkerId("marker_id_${_markers.length}"),
+      position: LatLng(end.latitude, end.longitude),
+    ));
     routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(origin: location!, destination: end, mode: RouteMode.walking))!;
     _polylines.add(
       Polyline(
@@ -78,17 +85,42 @@ class _MapScreenState2 extends State<MapScreen2> {
     setState(() {});
   }
 
+  // void onClick(Marker marker {
+  //   bool remove = false;
+  //   showDialog(
+  //     context: context2,
+  //     builder: (BuildContext context) => AlertDialog(
+  //       title: Text(
+  //         idToCpr[marker]!.name,
+  //       ),
+  //       content: Text(idToCpr[marker]!.address),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () {
+  //             remove = true;
+  //           },
+  //           child: Text("Pick up"),
+  //         )
+  //       ],
+  //     ),
+  //   ).then((value) => setState(() {
+  //         if (remove) {
+  //           _markers.remove(marker);
+  //         }
+  //       },),);
+
   // void on
 
   @override
   Widget build(BuildContext context) {
     if (location == null) getLocation(context);
-    if (location != null && _markers.isEmpty) drawRoute();
+    if (location != null && _markers.isEmpty) updateLocation();
     if (location != null && routeCoords.isEmpty) drawRoute();
 
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
         builder: (ctx) => Scaffold(
+          backgroundColor: bgcolor,
           appBar: AppBar(
             backgroundColor: primary,
             automaticallyImplyLeading: false,

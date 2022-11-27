@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 const Color black = Colors.black;
 const Color white = Colors.white;
 const Color primary = Color(0xffff0000);
+const Color bgcolor = white;
 
 // Fonts
 

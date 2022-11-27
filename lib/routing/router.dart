@@ -5,10 +5,11 @@ import '../screens/home_screen.dart';
 import '../screens/mapScreen.dart';
 import '../screens/register_screen.dart';
 import '../screens/settings.dart';
+import '../screens/welcome.dart';
 
 final router = GoRouter(
   routes: [
-    GoRoute(path: "/", builder: (contex, state) => LoginScreen()),
+    GoRoute(path: "/", builder: (contex, state) => WelcomeScreen()),
     GoRoute(
       path: "/login",
       builder: (context, state) {
@@ -36,7 +37,7 @@ final router = GoRouter(
     GoRoute(
       path: "/map",
       builder: (context, state) {
-        return MapScreen2();
+        return MapScreen();
       },
     ),
   ],

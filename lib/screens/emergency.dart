@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../constants/theme.dart';
+
 class EmergencyScreen extends StatefulWidget {
   EmergencyScreen({Key? key}) : super(key: key);
 
@@ -14,6 +16,7 @@ class EmergencyScreenState extends State<EmergencyScreen> {
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
         builder: (ctx) => Scaffold(
+          backgroundColor: bgcolor,
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
