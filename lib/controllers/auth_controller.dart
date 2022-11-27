@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/user_data.dart';
 
-import '../services/firestore/firestore_queries.dart';
+
+import '../services/functions/user_service.dart';
 
 class AuthController extends ChangeNotifier {
   // Singleton
@@ -30,7 +31,7 @@ class AuthController extends ChangeNotifier {
 
   logIn(String phoneNumber) async {
     try {
-      DocumentSnapshot? doc = await FirestoreQueries().getUserByPhone(phoneNumber);
+      DocumentSnapshot? doc = await UserService.getUserByPhone(phoneNumber);
       if (doc != null) {
         _currentUser = UserData.fromDoc(doc);
         _isLoggedIn = true;

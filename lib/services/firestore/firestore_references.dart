@@ -5,6 +5,9 @@ class ColRefs {
   static final colUsers = FirebaseFirestore.instance.collection("users");
   static final colEmergencies =
       FirebaseFirestore.instance.collection("emergencies");
+  static CollectionReference colEmergencyMessages(String emergencyId) {
+    return DocRefs.emergency(emergencyId).collection("messages");
+  }
 }
 
 class DocRefs {
