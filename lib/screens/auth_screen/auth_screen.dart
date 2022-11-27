@@ -82,7 +82,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         child: TextButton(
                           onPressed: () => {
-                            context.go('/map'),
+                            context.go('/map2'),
                           },
                           child: Text(
                             "Open map",
