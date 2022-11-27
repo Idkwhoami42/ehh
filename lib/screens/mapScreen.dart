@@ -24,7 +24,10 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  List<String> messages = [];
+  List<String> messages = [
+    "[14:12] Jane is picking up the defibrilator",
+    "[14:13] Omar is on route to emergency"
+  ];
 
   GoogleMapController? mapController;
   LatLng? location;
@@ -35,10 +38,12 @@ class _MapScreenState extends State<MapScreen> {
   Set<Polyline> _polylines = HashSet<Polyline>();
   List<LatLng> routeCoords = [];
 
-  GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
+  GoogleMapPolyline googleMapPolyline =
+      GoogleMapPolyline(apiKey: FlutterConfig.get("MAPS_APIKEY"));
 
   void getLocation(BuildContext context) async {
-    Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
+    Provider.of<PermissionsController>(context, listen: false)
+        .requestPermission([Permission.location]);
     var loc = await Location().getLocation();
     location = LatLng(loc.latitude!, loc.longitude!);
     setState(() => print(location));
@@ -46,15 +51,17 @@ class _MapScreenState extends State<MapScreen> {
 
   void updateLocation() {
     for (CPR cpr in CPR_locations()) {
-      double distance = (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
-      distance += (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
+      double distance =
+          (location!.latitude - cpr.lat) * (location!.latitude - cpr.lat);
+      distance +=
+          (location!.longitude - cpr.long) * (location!.longitude - cpr.long);
       distance = sqrt(distance);
 
       if (distance > 0.03) continue;
       Marker marker = Marker(
-          markerId: MarkerId("marker_id_${_markers.length}"),
-          position: LatLng(cpr.lat, cpr.long),
-        );
+        markerId: MarkerId("marker_id_${_markers.length}"),
+        position: LatLng(cpr.lat, cpr.long),
+      );
       _markers.add(marker);
       idToCpr[MarkerId("marker_id_${_markers.length - 1}")] = cpr;
     }
@@ -70,7 +77,8 @@ class _MapScreenState extends State<MapScreen> {
       markerId: MarkerId("marker_id_${_markers.length}"),
       position: LatLng(end.latitude, end.longitude),
     ));
-    routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(origin: location!, destination: end, mode: RouteMode.walking))!;
+    routeCoords = (await googleMapPolyline.getCoordinatesWithLocation(
+        origin: location!, destination: end, mode: RouteMode.walking))!;
     _polylines.add(
       Polyline(
         polylineId: const PolylineId('route'),
@@ -121,18 +129,6 @@ class _MapScreenState extends State<MapScreen> {
       onGenerateRoute: (_) => MaterialPageRoute(
         builder: (ctx) => Scaffold(
           backgroundColor: bgcolor,
-          appBar: AppBar(
-            backgroundColor: primary,
-            automaticallyImplyLeading: false,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  context.go('/settings');
-                },
-                icon: const Icon(Icons.settings, color: white),
-              )
-            ],
-          ),
           body: Stack(
             children: [
               SafeArea(
@@ -140,52 +136,45 @@ class _MapScreenState extends State<MapScreen> {
                   children: [
                     Expanded(
                       flex: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          child: location != null
-                              ? GoogleMap(
-                                  markers: _markers,
-                                  myLocationEnabled: true,
-                                  polylines: _polylines,
-                                  initialCameraPosition: CameraPosition(target: location!, zoom: 13.5),
-                                )
-                              : null,
-                        ),
+                      child: Container(
+                        child: location != null
+                            ? GoogleMap(
+                                markers: _markers,
+                                myLocationEnabled: true,
+                                polylines: _polylines,
+                                initialCameraPosition: CameraPosition(
+                                    target: location!, zoom: 13.5),
+                              )
+                            : null,
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(color: Colors.blue),
-                      ),
-                    ),
+                    Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                            "Directions: Mariott Hotel, 5th floor, by the bar")),
                     Expanded(
                       flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          color: Colors.red,
-                          child: ListView.builder(
-                            itemCount: messages.length,
-                            itemBuilder: ((context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Container(
-                                  width: 30,
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.cyan,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    messages[index % messages.length],
-                                    style: TextStyle(color: white, fontSize: 18),
-                                  ),
+                      child: Container(
+                        color: Colors.red,
+                        child: ListView.builder(
+                          itemCount: messages.length,
+                          itemBuilder: ((context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                              child: Container(
+                                width: 30,
+                                padding: EdgeInsets.fromLTRB(12, 9, 12, 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              );
-                            }),
-                          ),
+                                child: Text(
+                                  messages[index % messages.length],
+                                  style: TextStyle(color: black, fontSize: 15),
+                                ),
+                              ),
+                            );
+                          }),
                         ),
                       ),
                     ),

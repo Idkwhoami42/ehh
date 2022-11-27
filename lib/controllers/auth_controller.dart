@@ -32,7 +32,8 @@ class AuthController extends ChangeNotifier {
     _isLoggedIn = false;
   }
 
-  register(String phoneNumber, String firstName, String lastName, bool hasTraining, LocationData loc) async {
+  register(String phoneNumber, String firstName, String lastName,
+      bool hasTraining, LocationData loc) async {
     // Call the registration endpoint
     HttpsCallable createUser = _functions.httpsCallable('users-createUser');
     var res = await createUser.call({
@@ -46,7 +47,12 @@ class AuthController extends ChangeNotifier {
 
     // Check if registration was successful
     if (res.data != "") {
-      _currentUser = UserData(id: res.data as String, firstName: firstName, lastName: lastName, phoneNumber: phoneNumber, hasTraining: hasTraining);
+      _currentUser = UserData(
+          id: res.data as String,
+          firstName: firstName,
+          lastName: lastName,
+          phoneNumber: phoneNumber,
+          hasTraining: hasTraining);
       _isLoggedIn = true;
       return true;
     }
