@@ -8,16 +8,16 @@ import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'CZ');
   bool otpRequested = false, isCertified = false;
@@ -30,8 +30,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_phoneNumber.phoneNumber == null) {
       return;
     }
-    // losefocus(context);
-    // context.go('/map');
+
     await Provider.of<AuthController>(context, listen: false)
         .logIn(_phoneNumber.phoneNumber!);
   }
@@ -134,7 +133,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: TextButton(
-                            onPressed: () async => {await (_login())},
+                            onPressed: () async => context.go('/register'),
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
                                   vertical: 4.0, horizontal: 7.0),

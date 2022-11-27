@@ -1,4 +1,5 @@
-import 'package:ehh/screens/auth_screen/auth_screen.dart';
+import 'package:ehh/screens/auth/login_screen.dart';
+import 'package:ehh/screens/auth/register_screen.dart';
 import 'package:ehh/screens/home/home_screen.dart';
 import 'package:ehh/screens/mapScreen.dart';
 import 'package:ehh/screens/mapbox.dart';
@@ -7,11 +8,17 @@ import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
   routes: [
-    GoRoute(path: "/", builder: (contex, state) => AuthScreen()),
+    GoRoute(path: "/", builder: (contex, state) => LoginScreen()),
     GoRoute(
-      path: "/a",
+      path: "/login",
       builder: (context, state) {
-        return AuthScreen();
+        return LoginScreen();
+      },
+    ),
+    GoRoute(
+      path: "/register",
+      builder: (context, state) {
+        return RegisterScreen();
       },
     ),
     GoRoute(

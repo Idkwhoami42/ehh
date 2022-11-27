@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^10.2.0
   pinput: ^2.2.16
   provider: ^6.0.4
+  firebase_messaging: ^14.1.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0

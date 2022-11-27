@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:ehh/constants/theme.dart';
 import 'package:ehh/controllers/cpr_locations.dart';
 import 'package:ehh/controllers/permissions_controller.dart';
-import 'package:ehh/screens/auth_screen/auth_screen.dart';
+import 'package:ehh/screens/auth/login_screen.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,8 @@ class _MapScreenState extends State<MapScreen> {
   Map<LatLng, CPR> coordsToCpr = {};
 
   void getLocation(BuildContext context) async {
-    Provider.of<PermissionsController>(context, listen: false).requestPermission([Permission.location]);
+    Provider.of<PermissionsController>(context, listen: false)
+        .requestPermission([Permission.location]);
     location = await Location().getLocation();
     setState(() {});
   }
@@ -38,17 +39,22 @@ class _MapScreenState extends State<MapScreen> {
   void updateLocation() {
     if (mapController == null) return;
     mapController!.addCircle(
-      CircleOptions(geometry: LatLng(location!.latitude!, location!.longitude!), circleColor: "#0000FF"),
+      CircleOptions(
+          geometry: LatLng(location!.latitude!, location!.longitude!),
+          circleColor: "#0000FF"),
     );
     for (CPR cpr in CPR_locations()) {
-      double distance = (location!.latitude! - cpr.lat) * (location!.latitude! - cpr.lat);
-      distance += (location!.longitude! - cpr.long) * (location!.longitude! - cpr.long);
+      double distance =
+          (location!.latitude! - cpr.lat) * (location!.latitude! - cpr.lat);
+      distance +=
+          (location!.longitude! - cpr.long) * (location!.longitude! - cpr.long);
       distance = sqrt(distance);
 
       if (distance > 0.03) continue;
 
       mapController!.addCircle(
-        CircleOptions(geometry: LatLng(cpr.lat, cpr.long), circleColor: "#FF0000"),
+        CircleOptions(
+            geometry: LatLng(cpr.lat, cpr.long), circleColor: "#FF0000"),
       );
       coordsToCpr[LatLng(cpr.lat, cpr.long)] = cpr;
     }
@@ -68,7 +74,8 @@ class _MapScreenState extends State<MapScreen> {
           TextButton(
             onPressed: () {
               mapController?.removeCircle(circle);
-              messages.add("Picking up CPR at from ${coordsToCpr[selectedCpr?.options.geometry]!.name}");
+              messages.add(
+                  "Picking up CPR at from ${coordsToCpr[selectedCpr?.options.geometry]!.name}");
               Navigator.of(context).pop();
             },
             child: Text("Pick up"),
@@ -83,11 +90,11 @@ class _MapScreenState extends State<MapScreen> {
   void _onMapCreated(MapboxMapController controller) {
     mapController = controller;
     controller.onCircleTapped.add(onClick);
-    Future.delayed(const Duration(milliseconds: 300)).then((_) => updateLocation());
+    Future.delayed(const Duration(milliseconds: 300))
+        .then((_) => updateLocation());
   }
 
   final String mapboxapi = FlutterConfig.get("MAPBOXAPI");
-
 
   @override
   void dispose() {
@@ -129,7 +136,10 @@ class _MapScreenState extends State<MapScreen> {
                                   // styleString: MapboxStyles.DARK,
                                   accessToken: FlutterConfig.get("MAPBOXAPI"),
                                   onMapCreated: _onMapCreated,
-                                  initialCameraPosition: CameraPosition(target: LatLng(location!.latitude!, location!.longitude!), zoom: 13.5),
+                                  initialCameraPosition: CameraPosition(
+                                      target: LatLng(location!.latitude!,
+                                          location!.longitude!),
+                                      zoom: 13.5),
                                 )
                               : null,
                         ),
@@ -161,7 +171,8 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
                                   child: Text(
                                     messages[index % 2],
-                                    style: TextStyle(color: white, fontSize: 18),
+                                    style:
+                                        TextStyle(color: white, fontSize: 18),
                                   ),
                                 ),
                               );
