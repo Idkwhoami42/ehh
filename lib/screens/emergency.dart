@@ -18,7 +18,7 @@ class EmergencyScreen extends StatefulWidget {
 
 class EmergencyScreenState extends State<EmergencyScreen> {
   String? emergencyId;
-  Emergency? emergency;
+  Future<Emergency>? emergencyFuture;
 
   @override
   void initState() {
@@ -26,53 +26,83 @@ class EmergencyScreenState extends State<EmergencyScreen> {
     EmergencyController emergencyController =
         Provider.of<EmergencyController>(context, listen: false);
     emergencyController.startEmergency(emergencyId!);
-    emergency = emergencyController.emergency;
+    emergencyFuture = Provider.of<EmergencyController>(context, listen: false)
+        .emergencyFuture;
     super.initState();
+  }
+
+  void _exitScreen(BuildContext context) {
+    context.goNamed("home");
   }
 
   @override
   Widget build(BuildContext context) {
-    if (emergency == null) {
-      return CircularProgressIndicator();
-    }
-
-    return Navigator(
-      onGenerateRoute: (_) => MaterialPageRoute(
-        builder: (ctx) => Scaffold(
-          body: SafeArea(
+    return FutureBuilder(
+      future: emergencyFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Center(
-                  child: Text(
-                    emergency!.description,
-                    style: TextStyle(fontSize: 35, color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
+                Text("Loading Emergency data..."),
+                SizedBox(
+                  height: 20,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        context.go("/map");
-                      },
-                      child: const Text("Accept",
-                          style: TextStyle(fontSize: 30, color: Colors.green)),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text("Decline",
-                          style: TextStyle(fontSize: 30, color: Colors.black)),
-                    )
-                  ],
-                )
+                CircularProgressIndicator()
               ],
             ),
+          );
+        }
+
+        Emergency? emergency = snapshot.data;
+
+        if (emergency == null) {
+          _exitScreen(context);
+        }
+
+        return Navigator(
+          onGenerateRoute: (_) => MaterialPageRoute(
+            builder: (ctx) => Scaffold(
+              body: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Center(
+                      child: Text(
+                        emergency!.description,
+                        style: TextStyle(fontSize: 35, color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            context.goNamed("map", queryParams: {
+                              "emergencyId": emergencyId,
+                            });
+                          },
+                          child: const Text("Accept",
+                              style:
+                                  TextStyle(fontSize: 30, color: Colors.green)),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text("Decline",
+                              style:
+                                  TextStyle(fontSize: 30, color: Colors.black)),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

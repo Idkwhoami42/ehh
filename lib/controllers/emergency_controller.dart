@@ -6,41 +6,49 @@ import 'package:heartstart/models/emergency.dart';
 import 'package:heartstart/services/firestore/firestore_references.dart';
 
 class EmergencyController extends ChangeNotifier {
-  StreamSubscription? _emergencyStream;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? get emergencyStream =>
+      _emergencyStream;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _emergencyStream;
 
-  bool get isOngoing => _emergency?.ongoing ?? false;
+  StreamSubscription? _streamSubscription;
 
-  Emergency? get emergency => _emergency;
-  Emergency? _emergency;
+  bool get isOngoing => _emergencyFuture == null;
+
+  Future<Emergency>? get emergencyFuture => _emergencyFuture;
+  Future<Emergency>? _emergencyFuture;
 
   EmergencyController() {
-    _emergency = null;
+    _emergencyFuture = null;
     _emergencyStream = null;
   }
 
-  void startEmergency(String emergencyId) {
-    DocumentReference emergencyDocRef = DocRefs.emergency(emergencyId);
-    _emergencyStream =
-        emergencyDocRef.snapshots().listen((event) => onEmergencyUpdate);
+  Future<Emergency> _getEmergencyFuture(DocumentReference ref) async {
+    DocumentSnapshot doc = await ref.get();
+    return Emergency.fromDoc(doc);
+  }
 
-    // If somehow an ended emergency was accepted, end it here
-    if (_emergency?.ongoing == true) {
-      endEmergency();
-    }
+  Future<void> startEmergency(String emergencyId) async {
+    DocumentReference<Map<String, dynamic>> emergencyDocRef =
+        DocRefs.emergency(emergencyId);
+    _emergencyFuture = _getEmergencyFuture(emergencyDocRef);
+    // _emergency = Emergency.fromDoc(await emergencyDocRef.get());
+    _emergencyStream = emergencyDocRef.snapshots();
+    _streamSubscription =
+        _emergencyStream!.listen((doc) => onEmergencyUpdate(doc));
   }
 
   void onEmergencyUpdate(DocumentSnapshot doc) {
-    _emergency = Emergency.fromDoc(doc);
+    _emergencyFuture = Future.value(Emergency.fromDoc(doc));
   }
 
   void endEmergency() {
-    _emergencyStream?.cancel();
-    _emergency = null;
+    _streamSubscription?.cancel();
+    _emergencyFuture = null;
   }
 
   @override
   void dispose() {
-    _emergencyStream?.cancel();
+    _streamSubscription?.cancel();
     super.dispose();
   }
 }
