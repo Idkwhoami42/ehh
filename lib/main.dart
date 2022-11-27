@@ -1,7 +1,9 @@
 import 'package:ehh/app.dart';
 import 'package:ehh/constants/firebase_options.dart';
 import 'package:ehh/controllers/auth_controller.dart';
+import 'package:ehh/controllers/notification_controller.dart';
 import 'package:ehh/controllers/permissions_controller.dart';
+import 'package:ehh/models/user_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
@@ -18,6 +20,17 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => PermissionsController()),
         ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProxyProvider<AuthController, NotificationController>(
+          create: (context) => NotificationController(context),
+          update: (context, authController, notificationController) {
+            notificationController ??= NotificationController(context);
+            UserData? currentUser = authController.currentUser;
+            if (currentUser != null) {
+              notificationController.updateUser(currentUser);
+            }
+            return notificationController;
+          },
+        ),
       ],
       child: const App(),
     ),
