@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:heartstart/models/user_data.dart';
+import '../models/user_data.dart';
 
 import '../services/firestore/firestore_queries.dart';
 

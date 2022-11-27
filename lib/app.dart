@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heartstart/routing/router.dart';
+import 'routing/router.dart';
 
 import 'constants/theme.dart';
 

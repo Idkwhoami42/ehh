@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:heartstart/controllers/auth_controller.dart';
+import '../controllers/auth_controller.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 
@@ -32,8 +31,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
     // losefocus(context);
     // context.go('/map');
-    await Provider.of<AuthController>(context, listen: false)
-        .logIn(_phoneNumber.phoneNumber!);
+    await Provider.of<AuthController>(context, listen: false).logIn(_phoneNumber.phoneNumber!);
   }
 
   @override

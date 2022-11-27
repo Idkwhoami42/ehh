@@ -1,8 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:heartstart/controllers/auth_controller.dart';
-import 'package:heartstart/models/user_data.dart';
+import '../models/user_data.dart';
 
 import '../services/functions/user_service.dart';
 
