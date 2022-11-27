@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import '../constants/firebase_functions.dart';
 import '../models/user_data.dart';
 
 
@@ -13,7 +16,7 @@ class AuthController extends ChangeNotifier {
     instance._initialize();
     return instance;
   }
-
+  final _functions = FirebaseFunctions.instanceFor(region: functionsRegion);
   static final AuthController instance = AuthController._();
 
   /// Whether the current user is logged in.
@@ -28,6 +31,35 @@ class AuthController extends ChangeNotifier {
     _currentUser = null;
     _isLoggedIn = false;
   }
+
+  register(String phoneNumber, String firstName, String lastName,
+      bool hasTraining) async {
+    // Call the registration endpoint
+    HttpsCallable createUser = _functions.httpsCallable('users-createUser');
+    var res = await createUser.call({
+      'firstName': firstName,
+      'lastName': lastName,
+      'phoneNumber': phoneNumber,
+      'hasTraining': hasTraining,
+      'location': {'latitude': 0.0, 'longitude': 0.0},
+      'deviceToken': await FirebaseMessaging.instance.getToken()
+    });
+
+    // Check if registration was successful
+    if (res.data != "") {
+      _currentUser = UserData(
+          id: res.data as String,
+          firstName: firstName,
+          lastName: lastName,
+          phoneNumber: phoneNumber,
+          hasTraining: hasTraining);
+      _isLoggedIn = true;
+      return true;
+    }
+
+    return false;
+  }
+
 
   logIn(String phoneNumber) async {
     try {

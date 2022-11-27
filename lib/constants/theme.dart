@@ -9,7 +9,7 @@ const Color primary = Color(0xffff0000);
 
 // Fonts
 
-final defaultFont = GoogleFonts.roboto().fontFamily;
+final defaultFont = GoogleFonts.nunito().fontFamily;
 
 void losefocus(BuildContext context) {
   final currentFocus = FocusScope.of(context);
